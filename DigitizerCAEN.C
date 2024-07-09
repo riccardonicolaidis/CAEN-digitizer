@@ -90,6 +90,7 @@ public:
 
     // Wave management
     Wave readSingleWave(std::ifstream &input);
+    Wave decimateWave(Wave wave);
     std::string readWaves(const std::string& filename);
     std::vector<std::string> processAllFiles();
 
@@ -101,6 +102,7 @@ public:
     int getVerbosity(){return VERBOSITY;};
     int getNToProcess(){return N_TO_PROCESS;};
     int getNWaveFiles(){return N_WAVE_FILES;};
+    int getDecimationFactor(){return decimation_factor;};
 
     std::string getPathDigitizerFileFolder(){return PATH_DIGITIZER_FILE_FOLDER;};
     std::string getPathDestination(){return PATH_DESTINATION;};
@@ -113,6 +115,7 @@ public:
     void setNToProcess(int n){N_TO_PROCESS = n;};
     void setPathDestination(std::string path){PATH_DESTINATION = path;};
     void setProgressBar(bool progress){PROGRESS_BAR = progress;};
+    void setDecimationFactor(int decimation){decimation_factor = decimation;};
 private:
     /* ****************************************** VARIABLES ***************************************** */
     int VERBOSITY                           = 6;
@@ -120,6 +123,9 @@ private:
     int N_TO_PROCESS                        = 200;
     int N_WAVE_FILES                        = 0;
     int N_EVENTS                            = 0;
+
+    int decimation_factor                   = 1;
+
     std::string PATH_DIGITIZER_FILE_FOLDER  = "/media/riccardo/DATA/Sr90_300um_500um/RUN_0";
     std::string PATH_DESTINATION            = "/home/riccardo/Documenti/NUSES/DeltaE_E";
 
@@ -313,7 +319,20 @@ Wave DigitizerCAEN::readSingleWave(std::ifstream& input) {
     return wave;
 }
 
-
+Wave DigitizerCAEN::decimateWave(Wave wave)
+{
+    std::vector<double> waveform_decimated;
+    for(int i = 0; i < wave.waveform.size(); i++)
+    {
+        if(i%decimation_factor == 0)
+        {
+            waveform_decimated.push_back(wave.waveform[i]);
+        }
+    }
+    wave.waveform = waveform_decimated;
+    wave.recordLength = waveform_decimated.size();
+    return wave;
+}
 
 
 std::string DigitizerCAEN::readWaves(const std::string& filename)
@@ -348,6 +367,7 @@ std::string DigitizerCAEN::readWaves(const std::string& filename)
     int triggerTimeStamp_evt;
     int dcOffset_evt;
     std::vector<double> waveform_evt;
+    std::vector<double> waveform_evt_decimated;
 
     waves->Branch("recordLength", &recordLength_evt, "recordLength/I");
     waves->Branch("boardID", &boardID_evt, "boardID/I");
@@ -370,6 +390,13 @@ std::string DigitizerCAEN::readWaves(const std::string& filename)
     while (input) {
         dbg_print("Reading wave: begin", 3);
         Wave wave = readSingleWave(input);
+
+        if(decimation_factor > 1)
+        {
+            wave = decimateWave(wave);
+        }
+
+
         dbg_print("Reading wave: end", 3);
         if (input && wave.recordLength > 0) {
             recordLength_evt = wave.recordLength;

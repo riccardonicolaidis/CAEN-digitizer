@@ -24,10 +24,11 @@ int TestDigitizer()
     DigitizerCAEN* digitizer = new DigitizerCAEN();
 
     digitizer -> setNToProcess(-1);
-    digitizer -> setPathDigitizerFileFolder("/media/riccardo/DATA/Sr90_300um_500um/RUN_0");
-    digitizer -> setPathDestination("/home/riccardo/Documenti/NUSES/DeltaE_E/");
+    digitizer -> setPathDigitizerFileFolder("/home/riccardo/Documenti/NUSES/DeltaE_E/Cremat/TEMPLATE/");
+    digitizer -> setPathDestination("/home/riccardo/Documenti/NUSES/DeltaE_E/Cremat/Output/");
     digitizer -> setVerbosity(3);
     digitizer -> setProgressBar(true);
+    digitizer -> setDecimationFactor(10);
 
     digitizer -> startProcessing();
     return 0;

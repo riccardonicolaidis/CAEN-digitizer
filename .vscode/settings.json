@@ -85,6 +85,8 @@
         "CH0_AM.C": "cpp",
         "GetTemplate.C": "cpp",
         "TemplateFit.C": "cpp",
-        "MatchedFilter_Es.C": "cpp"
+        "MatchedFilter_Es.C": "cpp",
+        "GetTemplate_v02.C": "cpp",
+        "MatchedFilter.C": "cpp"
     }
 }
